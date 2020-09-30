@@ -29,13 +29,12 @@ def snake(x, y):
     screen.blit(snakeIMG, (x, y))
 
 def YOU_LOSE():
-    screen.blit(losingIMG, (100,200))
+    screen.blit(losingIMG, (50,50))
+    running = False
 
 # Game loop
 running = True
-win = False
-lose = False
-while running or not win or not lose:
+while running:
 
     # RGB - (MAKING IT BLACK)
     screen.fill((0, 0, 0))
