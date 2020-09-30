@@ -19,15 +19,19 @@ pygame.display.set_icon(icon)
 losingIMG = pygame.image.load("game-over.png")
 
 # Making a snake
-snakeIMG = pygame.image.load("brain.png")
+snake_img = pygame.image.load("brain.png")
+tail_img = pygame.image.load("")
+snake_angle = 0
 snakeX = 480
 snakeY = 320
 snakeX_change = 0
 snakeY_change = 0
 
 
-def snake(x, y):
-    screen.blit(snakeIMG, (x, y))
+def snake(x, y, angle):
+    surf = pygame.transform.rotate(snake_img,angle)
+    screen.blit(surf, (x,y))
+
 
 # Game loop
 running = True
@@ -51,17 +55,21 @@ while running:
         # Making the snake move
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                snakeX_change = -2
+                snakeX_change = -0.5
                 snakeY_change = 0
+                snake_angle = 90
             if event.key == pygame.K_RIGHT:
-                snakeX_change = 2
+                snakeX_change = 0.5
                 snakeY_change = 0
+                snake_angle = 270
             if event.key == pygame.K_UP:
-                snakeY_change = -2
+                snakeY_change = -0.5
                 snakeX_change = 0
+                snake_angle = 0
             if event.key == pygame.K_DOWN:
-                snakeY_change = 2
+                snakeY_change = 0.5
                 snakeX_change = 0
+                snake_angle = 180
             if event.key == pygame.K_ESCAPE or event.key == pygame.K_q:
                 running = False
 
@@ -85,7 +93,7 @@ while running:
         lose = True
 
     # Updating snake position
-    snake(snakeX, snakeY)
+    snake(snakeX, snakeY, snake_angle)
 
     #IF LOST TEXT
     if lose == True:
