@@ -1,4 +1,5 @@
 import pygame
+import time
 
 # Intitialize game
 pygame.init()
@@ -15,7 +16,7 @@ icon = pygame.image.load("icon.png")
 pygame.display.set_icon(icon)
 
 #Loosing image:
-losingIMG = pygame.image.load()
+losingIMG = pygame.image.load("game-over.png")
 
 # Making a snake
 snakeIMG = pygame.image.load("brain.png")
@@ -28,12 +29,10 @@ snakeY_change = 0
 def snake(x, y):
     screen.blit(snakeIMG, (x, y))
 
-def YOU_LOSE():
-    screen.blit(losingIMG, (50,50))
-    running = False
-
 # Game loop
 running = True
+lose = False
+win = False
 while running:
 
     # RGB - (MAKING IT BLACK)
@@ -90,7 +89,11 @@ while running:
 
     #IF LOST TEXT
     if lose == True:
-        YOU_LOSE()
+        screen.blit(losingIMG, (224, 64))
+        pygame.display.update()
+        time.sleep(2)
+        running = False
+
 
     # Update the screen
     pygame.display.update()
