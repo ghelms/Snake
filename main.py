@@ -5,7 +5,9 @@ import time
 pygame.init()
 
 # Create the screen
-screen = pygame.display.set_mode((960, 640))
+screen_x = 960
+screen_y=640
+screen = pygame.display.set_mode((screen_x, screen_y))
 
 # Background
 background = pygame.image.load("grass.jpg")
@@ -41,6 +43,7 @@ def tail(x,y,angle,x_change,y_change):
     surf_tail = pygame.transform.rotate(tail_img, angle)
     screen.blit(surf_tail, (x+x_change,y+y_change))
 
+count = 1
 # Game loop
 running = True
 lose = False
@@ -120,7 +123,11 @@ while running:
         pygame.display.update()
         time.sleep(2)
         running = False
-
+    count += 0.001
+    screen = pygame.display.set_mode((screen_x-count,screen_y-count))
+    screen.blit
+    if screen_y <= 0:
+        running = False
 
     # Update the screen
     pygame.display.update()
