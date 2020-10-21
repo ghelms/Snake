@@ -62,9 +62,10 @@ def tail(x, y, angle):
 running = True
 lose = False
 win = False
+
 while running:
 
-    # RGB - (MAKING IT BLACK)
+    # RGB - (MAKING IT WHITE)
     screen.fill((255, 255, 255))
 
     # Adding background
