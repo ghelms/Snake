@@ -1,15 +1,22 @@
 import pygame
+from pygame import mixer
 import time
 import pandas
+import math
+import random
 
 # Intitializing game
 pygame.init()
 
 # Create the screen
-screen = pygame.display.set_mode((960, 640))
+screen = pygame.display.set_mode((960, 600))
 
 # Background
-background = pygame.image.load("grass.jpg")
+background = pygame.image.load("snake_background.jpg")
+
+# Background sound
+mixer.music.load("background.wav")
+mixer.music.play(-1)
 
 # Title and icon
 pygame.display.set_caption("Snake invaders")
@@ -23,7 +30,7 @@ losingIMG = pygame.image.load("game-over.png")
 snake_img = pygame.image.load("brain.png")
 snake_angle = 0
 snakeX = 480
-snakeY = 320
+snakeY = 300
 snakeX_change = 0
 snakeY_change = 0
 
@@ -33,18 +40,23 @@ tail_x = 0
 tail_y = 0
 tail_angle = 0
 
+# Making food
+food_img = pygame.image.load("food.png")
+food_x = random.randint(10, 944)
+food_y = random.randint(10, 584)
+
 # Making an empty dataframe for logging the coordinates with 18 rows of the start position
 log = pandas.DataFrame(columns=["Count", "Snake_x", "Snake_y", "Snake_angle"])
-for i in range(1, 18):
-    log = log.append({
-        "Count": i,
-        "Snake_x": 480,
-        "Snake_y": 320,
-        "Snake_angle": 0
-    }, ignore_index=True)
 
 # Making a counter
-counter = 18
+counter = 0
+no_tails = 0
+
+# Score
+score_value = 0
+font = pygame.font.Font("freesansbold.ttf", 32)
+text_X = 10
+text_y = 10
 
 
 # Defining functions
@@ -58,6 +70,31 @@ def tail(x, y, angle):
     screen.blit(surf_tail, (x, y))
 
 
+def food(x, y):
+    screen.blit(food_img, (x, y))
+
+
+def show_score(x, y):
+    score = font.render("Score : " + str(score_value), True, (255, 255, 255))
+    screen.blit(score, (x, y))
+
+
+def isCollision_food(snakeX, snakeY, foodX, foodY):
+    distance = math.sqrt((math.pow(snakeX - foodX, 2)) + (math.pow(snakeY - foodY, 2)))
+    if distance < 27:
+        return True
+    else:
+        return False
+
+
+def isCollision_tail(snakeX, snakeY, tailX, tailY):
+    distance = math.sqrt((math.pow(snakeX - tailX, 2)) + (math.pow(snakeY - tailY, 2)))
+    if distance < 10:
+        return True
+    else:
+        return False
+
+
 # Game loop
 running = True
 lose = False
@@ -69,7 +106,7 @@ while running:
     screen.fill((255, 255, 255))
 
     # Adding background
-    #screen.blit(background, (0, 0))
+    screen.blit(background, (0, 0))
 
     # Looping through events
     for event in pygame.event.get():
@@ -114,8 +151,8 @@ while running:
     if snakeY <= 0:
         snakeY = 0
         lose = True
-    elif snakeY >= 616:
-        snakeY = 616
+    elif snakeY >= 576:
+        snakeY = 576
         lose = True
 
     # Updating snake position
@@ -129,19 +166,42 @@ while running:
         "Snake_angle": snake_angle
     }, ignore_index=True)
 
-    #The coordinates for the tail are the same as the ones for the snake 18 loops ago. This is done by indexing.
-    tail_x = log["Snake_x"][log["Count"][counter - 18]]
-    tail_y = log["Snake_y"][log["Count"][counter - 18]]
-    tail_angle = log["Snake_angle"][log["Count"][counter - 18]]
+    # Looping through number of tails and painting them all on the screen.
+    for i in range(1, no_tails + 1):
+        # The coordinates for the tail are the same as the ones for the snake 18 loops ago. This is done by indexing.
+        tail_x = log["Snake_x"][log["Count"][counter - 18 * i]]
+        tail_y = log["Snake_y"][log["Count"][counter - 18 * i]]
+        tail_angle = log["Snake_angle"][log["Count"][counter - 18 * i]]
+        tail(tail_x, tail_y, tail_angle)  # Painting a tail on the screen
 
-    # updating tail position
-    tail(tail_x, tail_y, tail_angle)
+        # Checking if the snake has collided with the tail
+        collission_tail = isCollision_tail(snakeX, snakeY, tail_x, tail_y)
+        if collission_tail:
+            lose = True
+
+    # Adding the food
+    food(food_x, food_y)
+
+    # Showing the score
+    show_score(text_X, text_y)
+
+    # Collision
+    collision_food = isCollision_food(snakeX, snakeY, food_x, food_y)
+    if collision_food:
+        eating_sound = mixer.Sound("explosion.wav")
+        eating_sound.play()
+        no_tails += 1
+        score_value += 1
+        food_x = random.randint(10, 944)
+        food_y = random.randint(10, 584)
 
     # Removing redundant lines in the logfile
-    #length_log = len(log["Count"])
-    #print(length_log)
-    #if length_log >= 30:
-    #    log = log.drop(0)
+    # length_log = len(log["Count"])
+    # print(length_log)
+    # if length_log > 100:
+    #    print(len(log["Count"]))
+    #   log = log.drop(log.index[:1])
+    #  print(len(log["Count"]))
 
     # IF LOST - TEXT
     if lose:
@@ -154,4 +214,4 @@ while running:
     pygame.display.update()
 
 print(log)
-
+print(score_value)

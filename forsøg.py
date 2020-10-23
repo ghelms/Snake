@@ -21,6 +21,11 @@ tail_y = log["Snake_y"][log["Count"][counter - 11]]
 tail_angle = log["Snake_y"][log["Count"][counter - 11]]
 
 
-print(len(log))
-log = log.drop(0)
-print(len(log))
+tis = 3
+name = "hep{}".format(tis)
+print(list(range(1, tis)))
+
+
+#print(log)
+#log = log.drop(log.index[:3])
+print(log.index[:0])
